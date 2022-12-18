@@ -10,6 +10,7 @@
         <script>
             var allnumbers = [];
             var reportlines = [];
+            var onlyKaprekar = false;
 
             function getNumber(a) {
                 if (Array.isArray(a)) {
@@ -20,6 +21,8 @@
             }
 
             function lunchGenerate() {
+                //onlyKaprekar = document.getElementById("checkKaprekar").checked;
+                onlyKaprekar = false;
                 reportlines = [];
                 let number = Number(document.getElementById("numInput").value);
                 document.getElementById("txtOutput").value += "\nStart generating for "+ number; 
@@ -34,6 +37,8 @@
                     // Add new number and icrement the index
                     allnumbers.push(newnumber);
                     idx++;
+                    // If you look for only Kaprekar numbers then no need to continue
+                    if (onlyKaprekar && (idx > 1)) break;
                     digits = Array.from(String(newnumber));
                     // Sort by ascending order
                     digits.sort(function(a, b){return b-a});
@@ -51,20 +56,29 @@
                         reportlines.push(idx +": "+ number1 +"-"+ number2 +"="+ number3);
                     }
                     newnumber = number3;
-                } while ((!allnumbers.includes(number3)) && (idx < 100));
-                //document.getElementById("txtOutput").value += "\n"+ startnumber +" "+ idx +": "+ number3 +" "+ allnumbers.includes(number3);
+                } while ((!allnumbers.includes(number3)) /*&& (idx < 100)*/);
+                // If you look for only Kaprekar number then leave without reporting
+                if (onlyKaprekar && (idx > 1)) return false;
                 let idx0 = allnumbers.indexOf(number3);
                 reportlines.push(startnumber +" "+ idx +" "+ idx0 +" "+ (idx - idx0) +" "+ number3 +" "+ allnumbers.includes(number3));
                 //console.log(startnumber);
             }
 
             function Clean() {
+                reportlines = [];
                 document.getElementById("txtOutput").value = "";
             }
 
             function allGenerate() {
+                onlyKaprekar = document.getElementById("checkKaprekar").checked;
                 Clean();
-                for (var n = 100000; n <= 999999; n++) {
+                let input = document.getElementById("numInput").value;
+                let start = "1" + "0".repeat(input.length - 1);
+                let stop = "9".repeat(input.length);
+                let startN = Number(start);
+                let stopN = Number(stop);
+                //console.log(startN, stopN);
+                for (var n = startN; n <= stopN; n++) {
                     Generate(n, 0, false);
                 }
                 document.getElementById("txtOutput").value = reportlines.join('\n');
@@ -72,7 +86,7 @@
                 // Create a hidden anchor element to activate file download
                 var a = document.createElement("a");
                 a.href = window.URL.createObjectURL(new Blob([reportlines.join('\n')], {type: "text/plain"}));
-                a.download = "kaprekar.txt";
+                a.download = `kaprekar-${input.length}${onlyKaprekar ? '-only' : ''}.txt`;
                 a.click(); 
                 
             }
@@ -80,10 +94,13 @@
         </script>
         <input id="numInput" type="number">
         <br>
-        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.4 (c) 2022 by Araz Yusubov</textarea>
+        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.5 (c) 2022 by Araz Yusubov</textarea>
         <br>
         <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">&nbsp;
-        <input id="btnClean" type="button" value="Clean" onclick="Clean();">&nbsp;
-        <input id="btnCalculateAll" type="button" value="Calculate for all 6-digit numbers" onclick="allGenerate();">
+        <input id="btnClean" type="button" value="Clean" onclick="Clean();">
+        <br>
+        <input id="btnCalculateAll" type="button" value="Calculate for all N-digit numbers" onclick="allGenerate();">&nbsp;
+        <input id="checkKaprekar" type="checkbox">&nbsp;
+        <label for="checkKaprekar">Only Kaprekar numbers</label>
     </body>
 </html>
