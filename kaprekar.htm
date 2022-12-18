@@ -1,0 +1,41 @@
+<html>
+    <head><title>Kaprekar</title></head>
+    <body>
+        <script>
+            function getNumber(a) {
+                if (Array.isArray(a)) {
+                    return a.join('');
+                } else {
+                    return undefined;
+                }
+            }
+
+            function lunchGenerate() {
+                console.log("Begin... Generate");
+                let number = document.getElementById("numInput").value;
+                Generate(number, number);
+                console.log("End... Generate");
+            }
+
+            function Generate(newnumber, number) {
+                digits = Array.from(String(newnumber));
+                // Sort by ascending order
+                digits.sort(function(a, b){return b-a});
+                let number1 = getNumber(digits);
+                // Sort by descending order
+                digits.sort(function(a, b){return a-b});
+                let number2 = getNumber(digits);
+                number3 = number1 - number2;
+                //console.log(number1, "-", number2, "=", number3);
+                document.getElementById("txtOutput").value += "\n"+ number1 +"-"+ number2 +"="+ number3;
+                if (number3 != newnumber) {
+                    setTimeout(function() { Generate(number3, number)}, 1000);
+                }
+            }
+
+        </script>
+        <input id="numInput" type="number">
+        <textarea id="txtOutput">Processing...</textarea>
+        <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">
+    </body>
+</html>
