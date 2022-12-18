@@ -11,6 +11,7 @@
             var allnumbers = [];
             var reportlines = [];
             var onlyKaprekar = false;
+            var onlyGenerator = false;
 
             function getNumber(a) {
                 if (Array.isArray(a)) {
@@ -21,8 +22,8 @@
             }
 
             function lunchGenerate() {
-                //onlyKaprekar = document.getElementById("checkKaprekar").checked;
                 onlyKaprekar = false;
+                onlyGenerator = false;
                 reportlines = [];
                 let number = Number(document.getElementById("numInput").value);
                 document.getElementById("txtOutput").value += "\nStart generating for "+ number; 
@@ -39,6 +40,8 @@
                     idx++;
                     // If you look for only Kaprekar numbers then no need to continue
                     if (onlyKaprekar && (idx > 1)) break;
+                    // If you look for only direct generator numbers then no need to continue
+                    if (onlyGenerator && (idx > 2)) break;
                     digits = Array.from(String(newnumber));
                     // Sort by ascending order
                     digits.sort(function(a, b){return b-a});
@@ -57,9 +60,11 @@
                     }
                     newnumber = number3;
                 } while ((!allnumbers.includes(number3)) /*&& (idx < 100)*/);
-                // If you look for only Kaprekar number then leave without reporting
+                // If you look for only Kaprekar numbers then leave without reporting
                 if (onlyKaprekar && (idx > 1)) return false;
                 let idx0 = allnumbers.indexOf(number3);
+                // If you look for only direct generator numbers then leave without reporting
+                if (onlyGenerator && ((idx > 2) || (idx0 == 0))) return false;
                 reportlines.push(startnumber +" "+ idx +" "+ idx0 +" "+ (idx - idx0) +" "+ number3 +" "+ allnumbers.includes(number3));
                 //console.log(startnumber);
             }
@@ -71,6 +76,7 @@
 
             function allGenerate() {
                 onlyKaprekar = document.getElementById("checkKaprekar").checked;
+                onlyGenerator = document.getElementById("checkGenerator").checked;
                 Clean();
                 let input = document.getElementById("numInput").value;
                 let start = "1" + "0".repeat(input.length - 1);
@@ -86,7 +92,7 @@
                 // Create a hidden anchor element to activate file download
                 var a = document.createElement("a");
                 a.href = window.URL.createObjectURL(new Blob([reportlines.join('\n')], {type: "text/plain"}));
-                a.download = `kaprekar-${input.length}${onlyKaprekar ? '-only' : ''}.txt`;
+                a.download = `kaprekar-${input.length}${onlyKaprekar ? '-const' : ''}${onlyGenerator ? '-genr' : ''}.txt`;
                 a.click(); 
                 
             }
@@ -94,13 +100,18 @@
         </script>
         <input id="numInput" type="number">
         <br>
-        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.5 (c) 2022 by Araz Yusubov</textarea>
+        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.6 (c) 2022 by Araz Yusubov</textarea>
         <br>
         <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">&nbsp;
         <input id="btnClean" type="button" value="Clean" onclick="Clean();">
         <br>
         <input id="btnCalculateAll" type="button" value="Calculate for all N-digit numbers" onclick="allGenerate();">&nbsp;
-        <input id="checkKaprekar" type="checkbox">&nbsp;
-        <label for="checkKaprekar">Only Kaprekar numbers</label>
+        <br>
+        <input name="filter" id="checkAll" type="radio" value="all" checked="true">&nbsp;
+        <label for="checkAll">All numbers</label>
+        <input name="filter" id="checkKaprekar" type="radio" value="kaprekar">&nbsp;
+        <label for="checkKaprekar">Only Kaprekar constants</label>
+        <input name="filter" id="checkGenerator" type="radio" value="generator">&nbsp;
+        <label for="checkGenerator">Only direct generators</label>
     </body>
 </html>
