@@ -1,7 +1,15 @@
+<!DOCTYPE html>
+<!-- 
+    (c)2022 by Araz Yusubov 
+    DISCLAIMER: This code is a quick hack intended to present a working prototype.
+    Hence it does not follow best practice of programming or software engineering.
+-->
 <html>
     <head><title>Kaprekar</title></head>
     <body>
         <script>
+            var allnumbers = [];
+
             function getNumber(a) {
                 if (Array.isArray(a)) {
                     return a.join('');
@@ -11,13 +19,16 @@
             }
 
             function lunchGenerate() {
-                console.log("Begin... Generate");
-                let number = document.getElementById("numInput").value;
-                Generate(number, number);
-                console.log("End... Generate");
+                allnumbers = [];
+                let number = Number(document.getElementById("numInput").value);
+                document.getElementById("txtOutput").value += "\nStart generating for "+ number; 
+                Generate(number, 0);
             }
 
-            function Generate(newnumber, number) {
+            function Generate(newnumber, idx) {
+                // Add new number and icrement the index
+                allnumbers.push(newnumber);
+                idx++;
                 digits = Array.from(String(newnumber));
                 // Sort by ascending order
                 digits.sort(function(a, b){return b-a});
@@ -25,17 +36,28 @@
                 // Sort by descending order
                 digits.sort(function(a, b){return a-b});
                 let number2 = getNumber(digits);
+                // Calculate the next number;
                 number3 = number1 - number2;
-                //console.log(number1, "-", number2, "=", number3);
-                document.getElementById("txtOutput").value += "\n"+ number1 +"-"+ number2 +"="+ number3;
-                if (number3 != newnumber) {
-                    setTimeout(function() { Generate(number3, number)}, 1000);
+                // Add leading zeroes if needed
+                while (number3.toString().length < newnumber.toString().length) number3 = "0" + number3;
+                // Add new calculation line to the output
+                document.getElementById("txtOutput").value += "\n"+ idx +": "+ number1 +"-"+ number2 +"="+ number3;
+                if (!allnumbers.includes(number3)) {
+                    setTimeout(function() { Generate(number3, idx)}, 0);
+                } else {
+                    console.log(allnumbers);
                 }
+            }
+
+            function Clean() {
+                document.getElementById("txtOutput").value = "";
             }
 
         </script>
         <input id="numInput" type="number">
-        <textarea id="txtOutput">Processing...</textarea>
-        <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">
+        <br>
+        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.3 (c) 2022 by Araz Yusubov</textarea>
+        <br>
+        <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">&nbsp;<input id="btnClean" type="button" value="Clean" onclick="Clean();">
     </body>
 </html>
