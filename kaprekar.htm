@@ -21,13 +21,79 @@
                 }
             }
 
+            // Subtract two integers stored as strings of the same length
+            function subtract(n1, n2) {
+                // console.log(n1, n2);
+                let len = n1.length;
+                let n3 = '';
+                var carry = 0;
+                for (var i = len; i > 0; i--) {
+                    let d = n1[i-1] - n2[i-1] - carry;
+                    if (d < 0) {
+                        d = d + 10;
+                        carry = 1;
+                    } else {
+                        carry = 0;
+                    }
+                    // console.log(d);
+                    n3 = d.toString() + n3;
+                    // console.log(n3);
+                }
+                return n3;
+            }
+
+            // Add two integers stored as strings of the same length
+            function add(n1, n2) {
+                // console.log(n1, n2);
+                let len = n1.length;
+                let n3 = '';
+                var carry = 0;
+                for (var i = len; i > 0; i--) {
+                    let d = n1[i-1] + n2[i-1] + carry;
+                    if (d >= 10) {
+                        d = d - 10;
+                        carry = 1;
+                    } else {
+                        carry = 0;
+                    }
+                    n3 = d.toString() + n3;
+                }
+                return n3;
+            }
+
+            // Increment by one an integer stored as string
+            function inc(n1) {
+                let len = n1.length;
+                let n3 = '';
+                var a = 1;
+                var carry = 0;
+                for (var i = len; i > 0; i--) {
+                    let d = Number(n1[i-1]) + a + carry;
+                    a = 0;
+                    if (d >= 10) {
+                        d = d - 10;
+                        carry = 1;
+                    } else {
+                        carry = 0;
+                    }
+                    // console.log(d);
+                    n3 = d.toString() + n3;
+                    if (carry == 0) break;
+                    // console.log(n3);
+                }
+                n3 = n1.substring(0, i-1) + n3;
+                if (carry == 1) n3 = '1' + n3;
+                return n3;
+            }
+
             function lunchGenerate() {
                 onlyKaprekar = false;
                 onlyGenerator = false;
                 reportlines = [];
-                let number = Number(document.getElementById("numInput").value);
+                //let number = Number(document.getElementById("numInput").value);
+                let number = document.getElementById("numInput").value;
                 document.getElementById("txtOutput").value += "\nStart generating for "+ number; 
-                Generate(number, 0, true);
+                Generate(number.toString(), 0, true);
                 document.getElementById("txtOutput").value = reportlines.join('\n');
             }
 
@@ -50,9 +116,10 @@
                     digits.sort(function(a, b){return a-b});
                     let number2 = getNumber(digits);
                     // Calculate the next number;
-                    number3 = number1 - number2;
+                    //number3 = number1 - number2;
+                    number3 = subtract(number1, number2);
                     // Add leading zeroes if needed
-                    while (number3.toString().length < newnumber.toString().length) number3 = "0" + number3;
+                    // while (number3.toString().length < newnumber.toString().length) number3 = "0" + number3;
                     // Add new calculation line to the output
                     if (details) {
                         //document.getElementById("txtOutput").value += "\n"+ idx +": "+ number1 +"-"+ number2 +"="+ number3;
@@ -81,11 +148,16 @@
                 let input = document.getElementById("numInput").value;
                 let start = "1" + "0".repeat(input.length - 1);
                 let stop = "9".repeat(input.length);
-                let startN = Number(start);
-                let stopN = Number(stop);
+                // let startN = Number(start);
+                // let stopN = Number(stop);
                 //console.log(startN, stopN);
-                for (var n = startN; n <= stopN; n++) {
+                // for (var n = startN; n <= stopN; n++) {
+                //     Generate(n, 0, false);
+                // }
+                n = start;
+                while (n.length == start.length) {
                     Generate(n, 0, false);
+                    n = inc(n);
                 }
                 document.getElementById("txtOutput").value = reportlines.join('\n');
 
@@ -100,7 +172,7 @@
         </script>
         <input id="numInput" type="number">
         <br>
-        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.6 (c) 2022 by Araz Yusubov</textarea>
+        <textarea id="txtOutput" cols="50" rows="10">Kaprekar v1.7 (c) 2022 by Araz Yusubov</textarea>
         <br>
         <input id="btnCalculate" type="button" value="Calculate" onclick="lunchGenerate();">&nbsp;
         <input id="btnClean" type="button" value="Clean" onclick="Clean();">
